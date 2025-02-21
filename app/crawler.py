@@ -3,12 +3,14 @@ from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 from db import insert_malicious_url
 from logger import logger  # logger 파일에서 가져오기
+import os
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                 "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
+os.makedirs('./log', exist_ok=True)
 
 class Collector:
     def __init__(self) -> None:
