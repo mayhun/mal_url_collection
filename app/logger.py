@@ -1,5 +1,8 @@
 import logging
 from datetime import datetime
+import os
+
+os.makedirs('./log', exist_ok=True)
 
 def setup_logger():
     """로거 설정 함수"""

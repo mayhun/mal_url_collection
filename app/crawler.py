@@ -10,7 +10,7 @@ HEADERS = {
                 "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
-os.makedirs('./log', exist_ok=True)
+
 
 class Collector:
     def __init__(self) -> None:
