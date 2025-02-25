@@ -11,22 +11,18 @@
 MAL_URL_COLLECTOR/ 
 │ 
 ├── app/ 
-│ 
-├── db.py # MySQL 연결 및 데이터 삽입 로직 
-│ 
-├── logger.py # 로그 설정 파일 
-│ 
-├── crawler.py # 크롤러
-│
-├── log/ # 크롤러 실행 로그 저장 
-│   │ 
+│ ├── db.py # MySQL 연결 및 데이터 삽입 로직 
+│ │
+│ ├── logger.py # 로그 설정 파일 
+│ │
+│ ├── crawler.py # 크롤러
+│ │
+│ └── log/ # 크롤러 실행 로그 저장  
 │   └── Collection_{date}.log # 일자별 로그 파일
 │
 ├── config/ 
 │   │ 
-│   ├── .env # 환경 변수 파일 (DB 연결 정보) 
-│   │ 
-│   └── .env.local # 로컬 환경 변수 파일 (DB 연결 정보) 
+│   └── .env # 환경 변수 파일 (DB 연결 정보) 
 │ 
 ├── requirements.txt # 필요한 Python 패키지 목록 
 ├── README.md # 프로젝트 설명서 
@@ -58,6 +54,14 @@ MAL_URL_COLLECTOR/
 ### 🕒 5️⃣ **정기 실행 기능 (크론탭)**
 - `crontab` 파일을 통해 주기적으로 크롤러를 실행할 수 있습니다.
 - 원하는 주기로 스케줄링 설정이 가능합니다.
+- 매일 9시에 실행
+```bash
+crontab -e # crontab 진입
+
+# m h  dom mon dow   command
+# Mal URL Collector
+0 9 * * * python {파일경로}/crawler.py
+```
 
 ---
 
