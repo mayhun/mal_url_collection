@@ -69,15 +69,7 @@ class Collector:
             self.nola_collection()
             self.openphish_collection()
             logger.info("🚀 Mal URL DB Insert Start")
-            for source, url_list in self.data_dic.items():
-                cnt = 0
-                for url in url_list:
-                    status = insert_malicious_url(url, source)
-                    if status:
-                        cnt += 1
-                
-                logger.info(f"📌 저장 완료: {cnt:,} (출처: {source})")
-
+            insert_malicious_url(self.data_dic)
             logger.info("✅ 모든 수집 및 저장 작업 완료")
 
         except Exception as e:

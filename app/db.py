@@ -2,7 +2,7 @@ import pymysql
 import os
 from dotenv import load_dotenv
 from zlib import crc32
-
+from logger import logger
 load_dotenv(dotenv_path='../config/.env')
 
 # DB 연결 설정 (환경 변수에서 불러오기)
@@ -25,26 +25,35 @@ connection = pymysql.connect(
 def calculate_crc32(url):
     return crc32(url.encode()) & 0xffffffff
 
-def insert_malicious_url(url, source):
+def insert_malicious_url(data_dic, connection):
+    commit_cnt = 0
     try:
         with connection.cursor() as cursor:
-            url_crc = calculate_crc32(url)
+            for source, url_list in data_dic.items():
+                cnt = 0  # 저장된 URL 개수
 
-            # 중복 확인
-            check_sql = "SELECT mal_id FROM mal_urls WHERE url_crc = %s AND url = %s"
-            cursor.execute(check_sql, (url_crc, url))
-            result = cursor.fetchone()
+                for url in url_list:
+                    url_crc = calculate_crc32(url)  # URL별로 개별 CRC32 계산
 
-            # 없을 때만 삽입
-            if result is None:
-                insert_sql = "INSERT INTO mal_urls (url, url_crc, source) VALUES (%s, %s, %s)"
-                cursor.execute(insert_sql, (url, url_crc, source))
-                connection.commit()
-                return True
-            else:
-                return False
+                    # 중복 확인
+                    check_sql = "SELECT mal_id FROM mal_urls WHERE url_crc = %s AND url = %s"
+                    cursor.execute(check_sql, (url_crc, url))
+                    result = cursor.fetchone()
+
+                    # 없을 때만 삽입
+                    if result is None:
+                        insert_sql = "INSERT INTO mal_urls (url, url_crc, source) VALUES (%s, %s, %s)"
+                        cursor.execute(insert_sql, (url, url_crc, source))
+                        commit_cnt += 1
+                        cnt += 1  # 저장된 URL 개수 증가
+
+                    # 100개 단위로 커밋
+                    if commit_cnt % 100 == 0:
+                        connection.commit()
+
+                logger.info(f"📌 저장 완료: {cnt:,} (출처: {source})")
+
+        connection.commit()  # 마지막 남은 데이터 커밋
     except Exception as e:
-        print(f"Error: {e}")
-        return False
-    finally:
-        connection.close()
+        logger.error(f"❌ DB 저장 중 오류 발생: {e}")
+        connection.rollback()  # 오류 발생 시 롤백
