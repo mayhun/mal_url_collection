@@ -25,7 +25,7 @@ connection = pymysql.connect(
 def calculate_crc32(url):
     return crc32(url.encode()) & 0xffffffff
 
-def insert_malicious_url(data_dic, connection):
+def insert_malicious_url(data_dic):
     commit_cnt = 0
     try:
         with connection.cursor() as cursor:
